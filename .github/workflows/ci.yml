@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Safety (SCA)
         run: |
-          safety check --json > safety-report.json || true
+          safety check --output json > safety-report.json || true
           echo "SCA scan completed"
 
       - name: Display reports
