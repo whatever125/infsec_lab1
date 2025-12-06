@@ -40,17 +40,26 @@ jobs:
         run: |
           echo "=== Bandit Report Summary ==="
           if [ -f bandit-report.json ]; then
-            python -c "import json; data=json.load(open('bandit-report.json')); 
-            print(f'Issues found: {len(data.get(\"results\", []))}');
-            for issue in data.get(\"results\", [])[:5]:
-              print(f'- {issue[\"test_id\"]}: {issue[\"issue_text\"]}')"
+            python - <<'PY'
+            import json
+            data = json.load(open('bandit-report.json'))
+            issues = data.get("results", [])
+            print(f'Issues found: {len(issues)}')
+            for issue in issues[:5]:
+                print(f'- {issue["test_id"]}: {issue["issue_text"]}')
+            PY
           fi
           
           echo -e "\n=== Safety Report Summary ==="
           if [ -f safety-report.json ]; then
-            python -c "import json; data=json.load(open('safety-report.json'));
-            vulns = data.get(\"vulnerabilities\", []);
-            print(f'Vulnerabilities found: {len(vulns)}');
+            python - <<'PY'
+            import json
+            data = json.load(open('safety-report.json'))
+            vulns = data.get("vulnerabilities", [])
+            print(f'Vulnerabilities found: {len(vulns)}')
             for v in vulns[:5]:
-              print(f'- {v.get(\"name\")}: {v.get(\"advisory\")[:100]}...')"
+                name = v.get("name") or v.get("package_name")
+                advisory = v.get("advisory", "")[:100] + "..." if v.get("advisory") else ""
+                print(f'- {name}: {advisory}')
+            PY
           fi
