@@ -51,7 +51,7 @@ jobs:
           fi
           
           echo -e "\n=== Safety Report Summary ==="
-          if [ -f safety-report.json ]; then
+          if [ -s safety-report.json ]; then
             python - <<'PY'
           import json
           data = json.load(open('safety-report.json'))
@@ -59,9 +59,12 @@ jobs:
           print(f'Vulnerabilities found: {len(vulns)}')
           for v in vulns[:5]:
               name = v.get("name") or v.get("package_name", "unknown")
-              advisory = (v.get("advisory") or "")[:100]
-              if advisory:
-                  advisory += "..."
-              print(f'- {name}: {advisory}')
+              adv = (v.get("advisory") or "")[:100]
+              if adv:
+                  adv += "..."
+              print(f'- {name}: {adv}')
           PY
+          else
+            echo "Vulnerabilities found: 0"
+            echo "(Safety reported no known vulnerabilities)"
           fi
