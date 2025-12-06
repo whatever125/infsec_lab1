@@ -1,3 +1,6 @@
+![Security CI Status](https://img.shields.io/github/actions/workflow/status/whatever125/infsec_lab1/ci.yml?branch=main&label=security-ci)
+![Security CI](https://github.com/whatever125/infsec_lab1/workflows/Security%20CI%20Pipeline/badge.svg)
+
 # Защищенное REST API на FastAPI
 
 Лабораторная работа по дисциплине «Информационная безопасность».  
@@ -84,14 +87,6 @@ Authorization: Bearer <токен>
 
 1. **Bandit** – статический анализ кода Python (SAST)
 2. **Safety** – проверка зависимостей на известные уязвимости (SCA)
-
-### Отчеты проверок
-
-![Bandit SAST report](screenshots/bandit-report.png)
-![Safety SCA report](screenshots/safety-report.png)
-![Успешный запуск pipeline](screenshots/actions-success.png)
-
-Все проверки завершаются успешно, критические уязвимости отсутствуют.
 
 ## Запуск проекта локально
 
