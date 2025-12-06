@@ -1,0 +1,56 @@
+name: Security CI Pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install bandit safety
+
+      - name: Run Bandit (SAST)
+        continue-on-error: true
+        run: |
+          bandit -r app/ -f json -o bandit-report.json || true
+          echo "SAST scan completed"
+
+      - name: Run Safety (SCA)
+        run: |
+          safety check --json > safety-report.json || true
+          echo "SCA scan completed"
+
+      - name: Display reports
+        run: |
+          echo "=== Bandit Report Summary ==="
+          if [ -f bandit-report.json ]; then
+            python -c "import json; data=json.load(open('bandit-report.json')); 
+            print(f'Issues found: {len(data.get(\"results\", []))}');
+            for issue in data.get(\"results\", [])[:5]:
+              print(f'- {issue[\"test_id\"]}: {issue[\"issue_text\"]}')"
+          fi
+          
+          echo -e "\n=== Safety Report Summary ==="
+          if [ -f safety-report.json ]; then
+            python -c "import json; data=json.load(open('safety-report.json'));
+            vulns = data.get(\"vulnerabilities\", []);
+            print(f'Vulnerabilities found: {len(vulns)}');
+            for v in vulns[:5]:
+              print(f'- {v.get(\"name\")}: {v.get(\"advisory\")[:100]}...')"
+          fi
