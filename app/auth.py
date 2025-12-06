@@ -1,9 +1,9 @@
 import os
 from datetime import datetime, timedelta, UTC
+
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
 
 SECRET_KEY = os.getenv("SECRET_KEY", "jwt-key-jwt-key-jwt-key-jwt-key-jwt-key-jwt-key-jwt-key-jwt-key")
 if not SECRET_KEY:
