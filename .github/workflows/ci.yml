@@ -2,7 +2,7 @@ name: Security CI Pipeline
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -41,25 +41,27 @@ jobs:
           echo "=== Bandit Report Summary ==="
           if [ -f bandit-report.json ]; then
             python - <<'PY'
-            import json
-            data = json.load(open('bandit-report.json'))
-            issues = data.get("results", [])
-            print(f'Issues found: {len(issues)}')
-            for issue in issues[:5]:
-                print(f'- {issue["test_id"]}: {issue["issue_text"]}')
-            PY
+          import json
+          data = json.load(open('bandit-report.json'))
+          issues = data.get("results", [])
+          print(f'Issues found: {len(issues)}')
+          for issue in issues[:5]:
+              print(f'- {issue["test_id"]}: {issue["issue_text"]}')
+          PY
           fi
           
           echo -e "\n=== Safety Report Summary ==="
           if [ -f safety-report.json ]; then
             python - <<'PY'
-            import json
-            data = json.load(open('safety-report.json'))
-            vulns = data.get("vulnerabilities", [])
-            print(f'Vulnerabilities found: {len(vulns)}')
-            for v in vulns[:5]:
-                name = v.get("name") or v.get("package_name")
-                advisory = v.get("advisory", "")[:100] + "..." if v.get("advisory") else ""
-                print(f'- {name}: {advisory}')
-            PY
+          import json
+          data = json.load(open('safety-report.json'))
+          vulns = data.get("vulnerabilities", [])
+          print(f'Vulnerabilities found: {len(vulns)}')
+          for v in vulns[:5]:
+              name = v.get("name") or v.get("package_name", "unknown")
+              advisory = (v.get("advisory") or "")[:100]
+              if advisory:
+                  advisory += "..."
+              print(f'- {name}: {advisory}')
+          PY
           fi
