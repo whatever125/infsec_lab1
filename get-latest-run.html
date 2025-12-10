@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Latest GitHub Actions Run</title>
+    <script>
+        async function getLatestRun() {
+            try {
+                const response = await fetch('https://api.github.com/repos/whatever125/infsec_lab1/actions/runs');
+                const data = await response.json();
+
+                const latestRun = data.workflow_runs.find(run =>
+                    run.name === "Security CI Pipeline" &&
+                    run.conclusion === "success"
+                );
+
+                if (latestRun) {
+                    document.getElementById('run-link').href = latestRun.html_url;
+                    document.getElementById('run-link').textContent = latestRun.html_url;
+                    document.getElementById('status').textContent = 'Найден последний запуск';
+                } else {
+                    document.getElementById('status').textContent = 'Не найдено успешных запусков';
+                }
+            } catch (error) {
+                document.getElementById('status').textContent = 'Ошибка при получении данных';
+                console.error(error);
+            }
+        }
+
+        window.onload = getLatestRun;
+    </script>
+</head>
+<body>
+    <h1>Последний запуск Security CI Pipeline</h1>
+    <p id="status">Загрузка...</p>
+    <p>
+        Ссылка: <a id="run-link" href="#">#</a>
+    </p>
+</body>
+</html>
