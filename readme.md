@@ -160,8 +160,28 @@ jobs:
 ![Safety Report](screenshots/safety-report.png)
 *Проверка зависимостей показала отсутствие известных уязвимостей в используемых пакетах*
 
-**Ссылка на последний успешный запуск pipeline:**  
+**Статическая ссылка на все запуски:**  
 [https://github.com/whatever125/infsec_lab1/actions](https://github.com/whatever125/infsec_lab1/actions)
+
+**Динамическая ссылка (обновляется автоматически):**  
+[https://whatever125.github.io/infsec_lab1/get-latest-run.html](https://whatever125.github.io/infsec_lab1/get-latest-run.html)
+
+<div id="latest-run"></div>
+<details>
+<summary>Cкрипт для получения ссылки</summary>
+<script>
+async function fetchLatestRun() {
+    const response = await fetch('https://api.github.com/repos/whatever125/infsec_lab1/actions/runs');
+    const data = await response.json();
+    const latestRun = data.workflow_runs.find(r => r.name === "Security CI Pipeline" && r.conclusion === "success");
+    if (latestRun) {
+        document.getElementById('latest-run').innerHTML = 
+            `<a href="${latestRun.html_url}" target="_blank">${latestRun.html_url}</a>`;
+    }
+}
+fetchLatestRun();
+</script>
+</details>
 
 ## Запуск проекта локально
 
@@ -225,30 +245,3 @@ curl http://localhost:8000/api/data \
    - Вынос конфиденциальных данных в переменные окружения
 
 Проект демонстрирует практическое применение принципов безопасной разработки и возможность автоматизации проверок безопасности в современных процессах CI/CD.
-
-**Динамическая ссылка (обновляется автоматически):**  
-[https://whatever125.github.io/infsec_lab1/get-latest-run.html](https://whatever125.github.io/infsec_lab1/get-latest-run.html)
-
-**Статическая ссылка на все запуски:**  
-https://github.com/whatever125/infsec_lab1/actions
-
-**Последний запуск:**  
-`https://github.com/whatever125/infsec_lab1/actions/runs/$(curl -s https://api.github.com/repos/whatever125/infsec_lab1/actions/runs | grep -o '"html_url":"[^"]*" | head -1 | cut -d'"' -f4)`
-
-**Или проверьте здесь:**  
-<button onclick="fetchLatestRun()">Обновить ссылку</button>
-<div id="latest-run"></div>
-
-<script>
-async function fetchLatestRun() {
-    const response = await fetch('https://api.github.com/repos/whatever125/infsec_lab1/actions/runs');
-    const data = await response.json();
-    const latestRun = data.workflow_runs.find(r => r.name === "Security CI Pipeline" && r.conclusion === "success");
-    if (latestRun) {
-        document.getElementById('latest-run').innerHTML = 
-            `<a href="${latestRun.html_url}" target="_blank">${latestRun.html_url}</a>`;
-    }
-}
-// Загрузить при открытии страницы
-fetchLatestRun();
-</script>
